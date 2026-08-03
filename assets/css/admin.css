@@ -175,9 +175,24 @@ code { font-family: var(--mono); }
 .link { color: var(--primary); font-size: 12px; cursor: pointer; }
 .link.danger { color: var(--danger); }
 
-.alert { border-radius: 10px; padding: 12px 16px; font-size: 13px; margin-bottom: 16px; }
+.alert {
+  position: relative;
+  border-radius: 10px; padding: 12px 36px 12px 16px; font-size: 13px;
+  margin-bottom: 16px;
+  transition: opacity .25s ease, transform .25s ease;
+}
 .alert.success { background: var(--success-bg); color: var(--success); }
 .alert.error { background: var(--danger-bg); color: var(--danger); }
+.alert.fade-out { opacity: 0; transform: translateY(-4px); pointer-events: none; }
+.alert-close {
+  position: absolute; top: 6px; right: 8px;
+  width: 22px; height: 22px;
+  background: transparent; border: none; cursor: pointer;
+  font-size: 18px; line-height: 1; color: currentColor;
+  opacity: .5; border-radius: 4px;
+  transition: all .15s;
+}
+.alert-close:hover { opacity: 1; background: rgba(0,0,0,0.06); }
 
 .card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 20px; box-shadow: var(--shadow-sm); }
 .card-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 16px; }
