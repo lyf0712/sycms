@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>速页CMS — 模板变量驱动的落地页内容管理系统</title>
+<link rel="icon" href="../logo/icon.ico">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- ===== 顶栏 ===== -->
+<header class="topbar">
+  <div class="container topbar-inner">
+    <a class="logo" href="index.html">
+      <img src="../logo/logo2.png" alt="速页CMS">
+    </a>
+    <nav class="topnav">
+      <a href="#how">操作流程</a>
+      <a href="#features">核心功能</a>
+      <a href="#details">更多细节</a>
+      <a href="#scenarios">适用场景</a>
+    </nav>
+    <a class="btn btn-primary" href="../admin/login.php">进入后台</a>
+  </div>
+</header>
+
+<!-- ===== Hero ===== -->
+<section class="hero">
+  <div class="container hero-inner">
+    <span class="badge">模板变量驱动 · 改后台即生效</span>
+    <h1>一个后台，管理你的所有落地页</h1>
+    <p>前端模板放 <code>templates/</code> 文件夹，代码里写 <code>{{ key }}</code> 占位符，后台改变量值前端自动更新 —— 无需懂代码，广告投放页面随改随发。</p>
+    <div class="hero-actions">
+      <a class="btn btn-primary btn-lg" href="../admin/login.php">登录后台开始使用</a>
+      <a class="btn btn-ghost btn-lg" href="#how">查看操作流程</a>
+    </div>
+
+    <!-- 后台预览占位 -->
+    <div class="hero-mock" aria-label="后台界面预览">
+      <div class="mock-side">
+        <div class="mock-logo"></div>
+        <div class="mock-nav-item"></div>
+        <div class="mock-nav-item active"></div>
+        <div class="mock-nav-item"></div>
+        <div class="mock-nav-item"></div>
+        <div class="mock-nav-item"></div>
+      </div>
+      <div class="mock-main">
+        <div class="mock-topbar"></div>
+        <div class="mock-cards">
+          <div class="mock-stat s-blue"><span class="big"></span><span class="small"></span></div>
+          <div class="mock-stat s-green"><span class="big"></span><span class="small"></span></div>
+          <div class="mock-stat s-amber"><span class="big"></span><span class="small"></span></div>
+        </div>
+        <div class="mock-table">
+          <div class="mock-thead"></div>
+          <div class="mock-row"></div>
+          <div class="mock-row"></div>
+          <div class="mock-row"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 操作流程 How It Works ===== -->
+<section id="how" class="section how">
+  <div class="container">
+    <div class="section-tag">HOW IT WORKS</div>
+    <h2 class="section-title">三步搞定一个落地页</h2>
+    <p class="section-sub">不需要懂代码，不需要重新部署，改完立即生效。</p>
+
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">01</div>
+        <h3>上传模板文件</h3>
+        <p>把做好的 <code>HTML</code> / <code>CSS</code> / <code>JS</code> 放进 <code>templates/</code> 文件夹，支持拖拽上传或在线新建。</p>
+      </div>
+      <div class="step">
+        <div class="step-num">02</div>
+        <h3>代码里写占位符</h3>
+        <p>在需要改动的地方写 <code>{{ key }}</code>，例如 <code>{{ contact_phone }}</code>、<code>{{ brand_color }}</code>、<code>{{ hero_title }}</code>。</p>
+      </div>
+      <div class="step">
+        <div class="step-num">03</div>
+        <h3>后台改变量值</h3>
+        <p>后台改任何变量，前端页面自动更新。改电话、改图片、改文案，全部即时生效，无需发布。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 核心功能 ===== -->
+<section id="features" class="section features">
+  <div class="container">
+    <div class="section-tag">CORE FEATURES</div>
+    <h2 class="section-title">四大核心能力</h2>
+    <p class="section-sub">围绕"改内容"这一个动作设计，简单到不需要培训。</p>
+
+    <div class="feature-grid">
+      <div class="feature-card">
+        <div class="feature-icon ic-blue">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3h7v7H3z"/><path d="M14 3h7v7h-7z"/><path d="M14 14h7v7h-7z"/><path d="M3 14h7v7H3z"/></svg>
+        </div>
+        <h3>变量管理</h3>
+        <p>添加任意变量：文本、多行文本、图片、链接、颜色、数字。改一个值，所有引用它的页面立刻生效，无需重新部署。</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon ic-green">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="17" x2="15" y2="17"/></svg>
+        </div>
+        <h3>模板文件</h3>
+        <p>内置在线编辑器（CodeMirror 高亮 HTML/CSS/JS），支持上传、新建、删除模板文件；右侧实时显示本页用到的变量。</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon ic-amber">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        </div>
+        <h3>表单数据</h3>
+        <p>访客表单提交自动收集，记录 IP、设备、浏览器、来路；支持日期 / 状态筛选、线索跟进，一键导出 CSV。</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon ic-red">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        </div>
+        <h3>系统设置</h3>
+        <p>修改管理员密码、更换后台访问入口增强安全性，配套环境检测与安装向导，开箱即用。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 更多细节 ===== -->
+<section id="details" class="section details">
+  <div class="container">
+    <div class="section-tag">MORE CAPABILITIES</div>
+    <h2 class="section-title">更多贴心细节</h2>
+    <p class="section-sub">把"能用"做到极致，才能真正"好用"。</p>
+
+    <div class="details-grid">
+      <div class="detail-card">
+        <div class="detail-ic">🖼</div>
+        <h4>图片上传</h4>
+        <p>图片类型变量支持本地上传或填 URL，文件自动保存到 <code>data/uploads/</code>。</p>
+      </div>
+      <div class="detail-card">
+        <div class="detail-ic">📤</div>
+        <h4>CSV 导出</h4>
+        <p>表单数据一键导出 CSV，Excel 直接打开，筛选结果也能完整导出。</p>
+      </div>
+      <div class="detail-card">
+        <div class="detail-ic">⌨</div>
+        <h4>代码高亮</h4>
+        <p>内置 CodeMirror 在线编辑器，自动识别 HTML / CSS / JS 语法高亮。</p>
+      </div>
+      <div class="detail-card">
+        <div class="detail-ic">✅</div>
+        <h4>线索状态</h4>
+        <p>新线索 → 已联系 → 已成交，状态一眼可辨，跟进不遗漏任何客户。</p>
+      </div>
+      <div class="detail-card">
+        <div class="detail-ic">🧩</div>
+        <h4>自定义字段</h4>
+        <p>不同落地页可挂不同表单字段（年龄 / 性别 / 城市…），额外字段自动收集入库。</p>
+      </div>
+      <div class="detail-card">
+        <div class="detail-ic">🛡</div>
+        <h4>安全防护</h4>
+        <p>CSRF 校验、参数白名单、可自定义后台入口，简单也安全。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 数据 + 适用场景 ===== -->
+<section id="scenarios" class="section metrics">
+  <div class="container">
+    <div class="metrics-row">
+      <div class="metric">
+        <div class="metric-num">6 种</div>
+        <div class="metric-lbl">变量类型</div>
+      </div>
+      <div class="metric">
+        <div class="metric-num">3 步</div>
+        <div class="metric-lbl">完成上线</div>
+      </div>
+      <div class="metric">
+        <div class="metric-num">0 行</div>
+        <div class="metric-lbl">改动代码</div>
+      </div>
+      <div class="metric">
+        <div class="metric-num">1 个</div>
+        <div class="metric-lbl">后台管所有页</div>
+      </div>
+    </div>
+
+    <div class="scenarios">
+      <h3>适用推广场景</h3>
+      <p class="section-sub">一个后台，管理医美、教育、餐饮、招聘等所有行业落地页。</p>
+      <div class="chips">
+        <span class="chip">医美 · 整形</span>
+        <span class="chip">教育培训</span>
+        <span class="chip">餐饮美食</span>
+        <span class="chip">招聘求职</span>
+        <span class="chip">房产家居</span>
+        <span class="chip">汽车服务</span>
+        <span class="chip">电商零售</span>
+        <span class="chip">更多行业…</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 最终 CTA ===== -->
+<section class="cta">
+  <div class="container cta-inner">
+    <h2>现在就用速页CMS<br>管理你的落地页</h2>
+    <p>3 分钟完成安装，5 分钟上线第一个可改内容的落地页。</p>
+    <a class="btn btn-primary btn-lg" href="../admin/login.php">登录后台开始使用</a>
+  </div>
+</section>
+
+<!-- ===== 页脚 ===== -->
+<footer class="site-footer">
+  <div class="container site-footer-inner">
+    <strong>速页CMS</strong>
+    <span>© 2026 速页CMS · 模板变量驱动的内容管理系统</span>
+  </div>
+</footer>
+
+<script src="main.js"></script>
+</body>
+</html>

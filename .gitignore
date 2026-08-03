@@ -1,0 +1,24 @@
+# ===== 速页CMS · Git 忽略规则 =====
+
+# 本地环境 / 敏感配置(禁止提交,含数据库密码与密钥)
+config.php
+
+# 后台生成的自定义入口(如 lyf.php、manage-x7k9.php)
+/[a-z0-9_-]*\.php
+!/index.php
+!/install.php
+!/install-cli.php
+!/check-php.js
+
+# 本地工具与排障产物
+.workbuddy/
+.tmp/
+node_modules/
+
+# 运行时数据(用户上传的图片等)
+data/uploads/
+
+# 系统 / IDE 杂项
+.DS_Store
+Thumbs.db
+*.log
