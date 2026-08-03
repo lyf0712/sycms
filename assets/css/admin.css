@@ -175,15 +175,33 @@ code { font-family: var(--mono); }
 .link { color: var(--primary); font-size: 12px; cursor: pointer; }
 .link.danger { color: var(--danger); }
 
+/* 全局 toast 提示:fixed 悬浮在顶部居中,不参与文档流布局 */
 .alert {
-  position: relative;
-  border-radius: 10px; padding: 12px 36px 12px 16px; font-size: 13px;
-  margin-bottom: 16px;
-  transition: opacity .25s ease, transform .25s ease;
+  position: fixed;
+  top: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 9999;
+  min-width: 320px;
+  max-width: 480px;
+  border-radius: 10px;
+  padding: 12px 36px 12px 16px;
+  font-size: 13px;
+  box-shadow: 0 10px 28px rgba(15, 23, 42, 0.18);
+  animation: toast-in .25s ease;
 }
 .alert.success { background: var(--success-bg); color: var(--success); }
 .alert.error { background: var(--danger-bg); color: var(--danger); }
-.alert.fade-out { opacity: 0; transform: translateY(-4px); pointer-events: none; }
+/* 淡出: 向上滑 + 透明度 0 */
+.alert.fade-out {
+  opacity: 0;
+  transform: translateX(-50%) translateY(-8px);
+  pointer-events: none;
+}
+@keyframes toast-in {
+  from { opacity: 0; transform: translateX(-50%) translateY(-12px); }
+  to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
 .alert-close {
   position: absolute; top: 6px; right: 8px;
   width: 22px; height: 22px;
