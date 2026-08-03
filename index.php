@@ -63,12 +63,50 @@ if (!defined('CMS_INSTALLED') || CMS_INSTALLED !== true) {
 }
 
 // ---- 处理表单提交 ----
+// 设计目标:任何上传的模板,只要里面有 <form>,提交后数据就能进库 —— 完全不用懂代码。
+// 因此:
+//   1. 不强制 CSRF(公开表单无会话,前端可能没注入 token;后台操作仍强制校验)
+//   2. 字段智能识别:无论表单字段叫什么名字,都能自动认出姓名/电话/留言
 $submitMsg = null;
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    csrf_verify($_POST['_csrf'] ?? null);
-    $name = trim((string)($_POST['visitor_name'] ?? ''));
-    $phone = trim((string)($_POST['visitor_phone'] ?? ''));
-    $message = trim((string)($_POST['message'] ?? ''));
+    // 有 token 才校验(老模板可能没有);没有则放行 —— 前端公开表单无需 CSRF
+    if (!empty($_POST['_csrf'])) {
+        csrf_verify($_POST['_csrf']);
+    }
+
+    // 智能字段识别:按 标准名 > 常见别名 > 关键词 三级匹配
+    $pick = function (array $aliases, array $keywords): string {
+        foreach ($aliases as $a) {
+            if (isset($_POST[$a]) && trim((string)$_POST[$a]) !== '') {
+                return trim((string)$_POST[$a]);
+            }
+        }
+        foreach ($_POST as $k => $v) {
+            if (!is_string($v)) continue;
+            $lk = strtolower($k);
+            foreach ($keywords as $kw) {
+                if (strpos($lk, $kw) !== false && trim($v) !== '') {
+                    return trim($v);
+                }
+            }
+        }
+        return '';
+    };
+    // 姓名:标准名 visitor_name / name / username / 含 name 姓 等
+    $name = $pick(
+        ['visitor_name', 'name', 'username', 'userName', 'fullname', 'nickname'],
+        ['name', 'username', '姓名', '名字']
+    );
+    // 电话:visitor_phone / phone / tel / mobile / 含 phone 手机 电话 联系方式
+    $phone = $pick(
+        ['visitor_phone', 'phone', 'tel', 'mobile', 'userPhone', 'telephone', 'cellphone'],
+        ['phone', 'tel', 'mobile', '手机', '电话', '联系方式']
+    );
+    // 留言:message / remark / content / 含 message 留言 备注 内容
+    $message = $pick(
+        ['message', 'remark', 'content', 'userRemark', 'note', 'msg'],
+        ['message', 'remark', 'content', '留言', '备注', '内容', '详情']
+    );
     $page = trim((string)($_POST['page_name'] ?? ''));
 
     // 客户环境:IP(兼容反向代理)、UA、来路

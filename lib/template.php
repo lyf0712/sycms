@@ -85,6 +85,10 @@ class Template
         // 任何服务器(nginx/Apache/宝塔)默认即可直接服务,无需 rewrite/伪静态配置。
         $content = self::fixAssetPaths($content);
 
+        // 第 1.5 步:表单自动增强 —— 让"完全不懂代码"的用户上传模板即可提交表单
+        // 自动给 <form> 补 method="post" action="index.php",并注入 _csrf / page_name 隐藏字段。
+        $content = self::enhanceForms($content);
+
         // 第 2 步:替换变量占位符
         $result = preg_replace_callback(self::PLACEHOLDER_RE, function ($m) use ($vars, $extra) {
             $key = $m[1];
@@ -98,6 +102,40 @@ class Template
             return '<!-- 未定义变量:' . $key . ' -->{{ ' . $key . ' }}';
         }, $content);
         return $result === null ? $content : $result;
+    }
+
+    /**
+     * 表单自动增强 —— 上传模板零配置即可收集访客数据
+     * 1. <form> 标签缺 method 补 "post",缺 action 补 "index.php"
+     * 2. 表单内没有 _csrf 时自动注入隐藏字段(_csrf + page_name)
+     * 已显式声明 method/action/_csrf 的表单原样保留,不重复处理。
+     */
+    private static function enhanceForms(string $html): string
+    {
+        // 1. 补 <form> 属性
+        $html = preg_replace_callback('/<form\b([^>]*)>/i', function ($m) {
+            $attrs = $m[1];
+            if (!preg_match('/\bmethod\s*=/i', $attrs)) {
+                $attrs .= ' method="post"';
+            }
+            if (!preg_match('/\baction\s*=/i', $attrs)) {
+                $attrs .= ' action="index.php"';
+            }
+            return '<form' . $attrs . '>';
+        }, $html);
+
+        // 2. 注入隐藏字段(仅当表单内还没有 _csrf)
+        $html = preg_replace_callback('/(<form\b[^>]*>)(.*?)(<\/form>)/is', function ($m) {
+            $inner = $m[2];
+            if (preg_match('/name\s*=\s*["\']?_csrf/i', $inner)) {
+                return $m[0]; // 已有 _csrf,不重复注入
+            }
+            $hidden = "\n    <input type=\"hidden\" name=\"_csrf\" value=\"{{ csrf_token }}\">"
+                . "\n    <input type=\"hidden\" name=\"page_name\" value=\"{{ site_name }}\">\n";
+            return $m[1] . $inner . $hidden . $m[3];
+        }, $html);
+
+        return $html;
     }
 
     /**
