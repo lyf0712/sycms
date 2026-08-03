@@ -735,13 +735,13 @@ td { padding: 0 20px; height: 60px; border-top: 1px solid var(--border); font-si
   font-family: var(--mono);
   overflow: auto;
 }
-/* 编辑器容器:外层 overflow 接管滚动 */
+/* 编辑器容器:外层 .editor-body 接管垂直滚动,CodeMirror 容器固定 100% */
 .editor-body { flex: 1; min-height: 0; display: flex; flex-direction: column; overflow: auto; }
-.editor-body .CodeMirror { display: block; flex: 0 0 auto; min-height: 100%; height: auto; }
-.editor-body .CodeMirror-scroll { overflow: visible !important; min-height: 0; }
-.editor-body .cm-editor-wrap { display: flex; flex-direction: column; flex: 0 0 auto; min-height: 0; overflow: visible; }
+.editor-body .CodeMirror { display: block; flex: 0 0 auto; min-height: 0; height: 100%; }
+.editor-body .CodeMirror-scroll { overflow: auto !important; min-height: 0; }
+.editor-body .cm-editor-wrap { display: flex; flex-direction: column; flex: 0 0 auto; min-height: 0; }
 
-/* 完全隐藏 CodeMirror 自带的内嵌滚动条(由外层 .editor-body 接管) */
+/* 隐藏 CodeMirror 模拟的滚动条(由外层 .editor-body 接管) */
 .editor-body .CodeMirror-vscrollbar,
 .editor-body .CodeMirror-hscrollbar { display: none !important; }
 

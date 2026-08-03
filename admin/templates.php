@@ -348,8 +348,8 @@ window.addEventListener('load', function () {
       indentUnit: 2,
       tabSize: 2,
       smartIndent: true,
-      matchBrackets: true,
-      height: 'auto'  // 让编辑器高度 = 内容高度,避免内嵌滚动条;由外层 .editor-body 滚动
+      matchBrackets: true
+      // 高度继承 .editor-body 的 100%,由外层 .editor-body 接管滚动
     });
 
     // 保存前把编辑器内容同步回 textarea,随表单提交
