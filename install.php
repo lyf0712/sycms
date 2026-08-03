@@ -181,18 +181,27 @@ $allPass = EnvCheck::allPass($checks);
       <p class="sub">检测服务器配置是否满足系统运行要求,不满足的项将以红色标出并提示所需版本</p>
       <div class="check-list">
         <?php foreach ($checks as $c): ?>
-        <div class="check-row <?= $c['ok'] ? '' : 'fail' ?>">
-          <span class="check-icon <?= $c['ok'] ? 'ok' : 'no' ?>"><?= $c['ok'] ? '✓' : '×' ?></span>
+        <?php
+          $isReq = $c['required'] ?? true;
+          $bad = !$c['ok'];
+          $rowCls = $bad ? ($isReq ? 'fail' : 'warn-row') : '';
+          $iconCls = $bad ? ($isReq ? 'no' : 'warn') : 'ok';
+          $tagCls = $bad ? ($isReq ? 'no' : 'warn') : 'ok';
+        ?>
+        <div class="check-row <?= $rowCls ?>">
+          <span class="check-icon <?= $iconCls ?>"><?= $c['ok'] ? '✓' : '!' ?></span>
           <span class="check-name"><?= e($c['name']) ?></span>
           <span class="check-value"><?= e($c['value']) ?></span>
-          <?php if (!$c['ok']): ?><span class="check-hint"><?= e($c['hint']) ?></span><?php endif; ?>
-          <span class="check-tag <?= $c['ok'] ? 'ok' : 'no' ?>"><?= $c['ok'] ? '支持' : '不支持' ?></span>
+          <?php if ($bad): ?><span class="check-hint"><?= e($c['hint']) ?></span><?php endif; ?>
+          <span class="check-tag <?= $tagCls ?>"><?= $c['ok'] ? '支持' : ($isReq ? '不支持' : '可选') ?></span>
         </div>
         <?php endforeach; ?>
       </div>
       <div class="check-actions">
         <?php if (!$allPass): ?>
-        <div class="warn"><span class="warn-ic">!</span> 有 <?= count(array_filter($checks, function ($c) { return !$c['ok']; })) ?> 项不满足要求,请先处理后继续</div>
+        <div class="warn"><span class="warn-ic">!</span> 有 <?= count(array_filter($checks, function ($c) { return ($c['required'] ?? true) && !$c['ok']; })) ?> 项必需环境不满足,请先处理后继续</div>
+        <?php elseif (EnvCheck::hasOptionalWarnings($checks)): ?>
+        <div class="warn warn-soft"><span class="warn-ic">i</span> 有可选项未启用(如 GD/cURL),不影响核心功能,可继续安装</div>
         <?php endif; ?>
         <div class="btns">
           <button class="btn" onclick="location.reload()">重新检测</button>

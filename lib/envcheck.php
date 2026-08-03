@@ -57,17 +57,18 @@ class EnvCheck
             'hint' => $pdoMysql ? '' : '需要启用 pdo_mysql 扩展以连接 MySQL',
         ];
 
-        // 6. GD 图片库(需要 >= 2.1)
+        // 6. GD 图片库(可选:仅用于图片上传内容校验,缺失不影响核心功能)
         $gdOk = extension_loaded('gd');
         $gdVersion = $gdOk && defined('GD_VERSION') ? GD_VERSION : '';
         $checks['gd'] = [
             'name' => 'GD 图片库',
             'ok' => $gdOk,
+            'required' => false,
             'value' => $gdOk ? ($gdVersion ?: '已启用') : '未安装',
-            'hint' => $gdOk ? '' : '需要 GD 2.1+ 用于图片处理',
+            'hint' => $gdOk ? '' : '可选:仅用于校验上传图片的真实性,缺失可继续安装(图片上传校验会跳过)',
         ];
 
-        // 7. cURL 扩展
+        // 7. cURL 扩展(可选:当前版本未实际使用,仅保留检测)
         $curlOk = extension_loaded('curl');
         $curlVersion = '';
         if ($curlOk && function_exists('curl_version')) {
@@ -77,8 +78,9 @@ class EnvCheck
         $checks['curl'] = [
             'name' => 'cURL 扩展',
             'ok' => $curlOk,
+            'required' => false,
             'value' => $curlOk ? ($curlVersion ?: '已启用') : '未安装',
-            'hint' => $curlOk ? '' : '需要启用 curl 扩展',
+            'hint' => $curlOk ? '' : '可选:当前版本未实际调用 curl,缺失可继续安装',
         ];
 
         // 8. 目录写入权限(data/ 与 config.php)
@@ -94,14 +96,26 @@ class EnvCheck
         return $checks;
     }
 
-    /** 是否全部通过 */
+    /** 是否全部通过(仅硬性必需项;可选扩展缺失不阻止安装) */
     public static function allPass(array $checks): bool
     {
         foreach ($checks as $c) {
-            if (empty($c['ok'])) {
+            $required = $c['required'] ?? true; // 未标记 required 的项默认必选
+            if ($required && empty($c['ok'])) {
                 return false;
             }
         }
         return true;
+    }
+
+    /** 是否有可选项未满足(仅提示,不阻止) */
+    public static function hasOptionalWarnings(array $checks): bool
+    {
+        foreach ($checks as $c) {
+            if (empty($c['required']) && empty($c['ok'])) {
+                return true;
+            }
+        }
+        return false;
     }
 }
