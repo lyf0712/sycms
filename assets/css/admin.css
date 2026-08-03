@@ -679,7 +679,7 @@ td { padding: 0 20px; height: 60px; border-top: 1px solid var(--border); font-si
 .tpl-tree { border-right: 1px solid var(--border); padding: 16px 0; background: var(--bg); display: flex; flex-direction: column; min-height: 0; overflow: hidden; }
 .tpl-tree-head { display: flex; align-items: center; justify-content: space-between; padding: 0 16px 12px; }
 .tpl-tree-head strong { font-size: 13px; font-weight: 600; font-family: var(--mono); }
-.tree-list { padding: 0 12px; overflow-y: auto; flex: 1; min-height: 0; }
+.tree-list { padding: 0 12px; overflow-y: auto; flex: 1 1 auto; min-height: 120px; max-height: 60vh; }
 .tree-item-wrap {
   display: flex; align-items: center; gap: 4px;
   padding: 0 4px; border-radius: 8px;
@@ -748,19 +748,27 @@ td { padding: 0 20px; height: 60px; border-top: 1px solid var(--border); font-si
 }
 .file-pill em { color: var(--text-3); font-style: normal; font-size: 10px; }
 .upload-hint-inline { font-size: 10px; color: var(--text-3); margin-top: 6px; opacity: .7; }
-.tree-tip { padding: 12px 16px; font-size: 11px; color: var(--text-3); line-height: 1.6; margin-bottom: 8px; }
+.tree-tip { padding: 12px 16px 8px; font-size: 11px; color: var(--text-3); line-height: 1.6; }
 .new-file-box { padding: 0 16px 12px; }
-.new-file-form { display: flex; gap: 6px; }
-.new-file-form input { flex: 1; height: 32px; border: 1px solid var(--border-2); border-radius: 6px; padding: 0 10px; font-size: 12px; font-family: var(--mono); }
+.new-file-form { display: flex; gap: 6px; align-items: center; }
+.new-file-form input { flex: 1; min-width: 0; height: 32px; border: 1px solid var(--border-2); border-radius: 6px; padding: 0 10px; font-size: 12px; font-family: var(--mono); }
 .new-file-form input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(47,124,246,0.15); }
-.new-file-form button { height: 32px; padding: 0 12px; border-radius: 6px; border: none; background: var(--primary); color: #fff; cursor: pointer; font-size: 12px; }
-.new-file-form button.btn-cancel { background: var(--bg); color: var(--text-2); border: 1px solid var(--border-2); }
+.new-file-form button {
+  height: 32px; padding: 0 14px; border-radius: 6px; border: none;
+  background: var(--primary); color: #fff; cursor: pointer;
+  font-size: 12px; white-space: nowrap; flex-shrink: 0;
+  display: inline-flex; align-items: center; justify-content: center;
+}
+.new-file-form button.btn-cancel {
+  background: var(--bg); color: var(--text-2);
+  border: 1px solid var(--border-2);
+}
 .new-file-form button.btn-cancel:hover { background: var(--border); color: var(--text); }
 
-/* 上传按钮:不撑满,内容居中 */
+/* 上传按钮: 紧贴文件列表下方, 宽度适中不撑满 */
 .upload-trigger {
   display: flex; align-items: center; justify-content: center; gap: 6px;
-  cursor: pointer; margin: 0 auto; width: fit-content; min-width: 160px;
+  cursor: pointer; margin: 12px auto 0; width: fit-content; max-width: 200px;
 }
 
 .tpl-editor { display: flex; flex-direction: column; background: #fff; min-height: 0; overflow: hidden; }
