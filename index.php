@@ -31,12 +31,21 @@ $staticExts = [
 $reqPath = ltrim((string)parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH), '/');
 $ext = strtolower(pathinfo($reqPath, PATHINFO_EXTENSION));
 if (isset($staticExts[$ext])) {
-    // 安全校验:拒绝路径穿越与子目录(仅允许 templates/ 下的一层文件)
-    if (strpos($reqPath, '..') !== false || strpos($reqPath, '\\') !== false || strpos($reqPath, '/') !== false) {
+    // 安全:拒绝路径穿越
+    if (strpos($reqPath, '..') !== false || strpos($reqPath, '\\') !== false) {
         http_response_code(404);
         exit('Not Found');
     }
-    $candidate = TEMPLATE_DIR . DIRECTORY_SEPARATOR . $reqPath;
+    // 兼容三种写法:
+    //   ① 裸文件名   "style.css"        → templates/style.css
+    //   ② 带 templates/ 前缀           → templates/xxx.css
+    //   ③ 多层子目录  "css/theme.css"   → templates/css/theme.css
+    if (strpos($reqPath, 'templates/') === 0) {
+        $relPath = substr($reqPath, strlen('templates/'));
+    } else {
+        $relPath = $reqPath;
+    }
+    $candidate = TEMPLATE_DIR . DIRECTORY_SEPARATOR . $relPath;
     if (is_file($candidate)) {
         header('Content-Type: ' . $staticExts[$ext]);
         header('Cache-Control: public, max-age=3600');

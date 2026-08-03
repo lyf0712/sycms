@@ -78,6 +78,14 @@ class Template
     public static function renderString(string $content, array $extra = []): string
     {
         $vars = self::allVariables();
+
+        // 第 1 步:HTML 静态资源路径自动补前缀
+        // 模板里写 <link href="style.css"> / <script src="main.js"> / <img src="logo.png">
+        // 渲染后自动变为 templates/style.css 等 —— 文件真实存在于站点根目录,
+        // 任何服务器(nginx/Apache/宝塔)默认即可直接服务,无需 rewrite/伪静态配置。
+        $content = self::fixAssetPaths($content);
+
+        // 第 2 步:替换变量占位符
         $result = preg_replace_callback(self::PLACEHOLDER_RE, function ($m) use ($vars, $extra) {
             $key = $m[1];
             if (array_key_exists($key, $extra)) {
@@ -90,6 +98,32 @@ class Template
             return '<!-- 未定义变量:' . $key . ' -->{{ ' . $key . ' }}';
         }, $content);
         return $result === null ? $content : $result;
+    }
+
+    /**
+     * 自动修正 HTML 中相对静态资源路径
+     * 匹配 <link href> / <script src> / <img src> 里的相对路径,补 templates/ 前缀。
+     * 跳过:绝对 URL(http/https)、根路径(/)、协议无关(//)、data:、锚点(#)、
+     *     已带 templates/ 前缀、{{ }} 占位符、../ 上跳路径。
+     */
+    private static function fixAssetPaths(string $html): string
+    {
+        // 静态资源扩展名(与上传/保存白名单一致,不含 html 避免误改页面链接)
+        $staticExt = '(?:css|js|mjs|png|jpe?g|gif|webp|svg|ico|txt|json|woff2?|ttf)';
+        $pattern = '/(<(?:link|script|img)\s+[^>]*?(?:href|src)=["\'])([^"\']+?)(["\'])/i';
+
+        return preg_replace_callback($pattern, function ($m) use ($staticExt) {
+            $url = $m[2];
+            // 跳过:绝对地址 / 协议无关 / 根路径 / data / 锚点 / js 协议 / 占位符 / 上跳 / 已带前缀
+            if (preg_match('~^(?:https?:)?//|^/|^data:|^#|^javascript:|^\.\./|^\{\{|\btemplates/~i', $url)) {
+                return $m[0];
+            }
+            // 仅当扩展名是静态资源时才补前缀(否则是页面链接,保持原样)
+            if (!preg_match('/\.' . $staticExt . '(?:[?#].*)?$/i', $url)) {
+                return $m[0];
+            }
+            return $m[1] . 'templates/' . $url . $m[3];
+        }, $html);
     }
 
     /**

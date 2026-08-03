@@ -640,21 +640,40 @@ td { padding: 0 20px; height: 60px; border-top: 1px solid var(--border); font-si
 .tpl-tree-head { display: flex; align-items: center; justify-content: space-between; padding: 0 16px 12px; }
 .tpl-tree-head strong { font-size: 13px; font-weight: 600; font-family: var(--mono); }
 .tree-list { padding: 0 12px; }
-.tree-item {
-  display: flex; align-items: center; gap: 6px; padding: 0 8px; height: 32px; border-radius: 6px; font-size: 12px;
-  color: var(--text-2); margin-bottom: 2px;
+.tree-item-wrap {
+  display: flex; align-items: center; gap: 4px;
+  padding: 0 4px; border-radius: 6px;
+  margin-bottom: 2px;
 }
-.tree-item.active { background: var(--primary-bg); color: var(--primary); font-weight: 500; }
+.tree-item-wrap:hover { background: var(--bg); }
+.tree-item-wrap.active { background: var(--primary-bg); }
+.tree-item-wrap.active .tree-name { color: var(--primary); font-weight: 500; }
+.tree-item {
+  display: flex; align-items: center; gap: 6px; padding: 0 8px; height: 32px;
+  font-size: 12px; color: var(--text-2); flex: 1; min-width: 0;
+}
 .tree-icon { font-weight: 600; font-size: 11px; }
-.tree-name { font-family: var(--mono); flex: 1; }
+.tree-name { font-family: var(--mono); flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .tree-item em { font-style: normal; font-size: 10px; color: var(--text-3); }
+.tree-del-form { display: flex; }
+.tree-del {
+  width: 22px; height: 22px;
+  border: none; background: transparent;
+  color: var(--text-3); font-size: 16px; line-height: 1;
+  border-radius: 4px; cursor: pointer; transition: all .15s;
+}
+.tree-del:hover { background: #FEE2E2; color: #DC2626; }
+.tree-item-wrap.active .tree-del { color: var(--primary); }
+.tree-item-wrap.active .tree-del:hover { background: rgba(255,255,255,0.6); color: #DC2626; }
+
+.upload-hint { display: block; font-size: 11px; color: var(--text-3); margin-top: 6px; }
 .tree-tip { padding: 12px 16px; font-size: 11px; color: var(--text-3); line-height: 1.6; margin-bottom: 8px; }
 .new-file-box { padding: 0 16px 12px; }
 .new-file-form { display: flex; gap: 6px; }
 .new-file-form input { flex: 1; height: 32px; border: 1px solid var(--border-2); border-radius: 6px; padding: 0 10px; font-size: 12px; font-family: var(--mono); }
 .new-file-form button { height: 32px; padding: 0 12px; border-radius: 6px; border: none; background: var(--primary); color: #fff; cursor: pointer; font-size: 12px; }
 
-.tpl-editor { display: flex; flex-direction: column; background: #fff; }
+.tpl-editor { display: flex; flex-direction: column; background: #fff; min-height: 0; }
 .editor-tabs { display: flex; gap: 2px; padding: 8px; border-bottom: 1px solid var(--border); background: var(--bg); }
 .editor-tabs .tab {
   display: flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 6px;
@@ -662,14 +681,16 @@ td { padding: 0 20px; height: 60px; border-top: 1px solid var(--border); font-si
 }
 .editor-tabs .tab.active { background: #fff; color: var(--text); box-shadow: 0 1px 2px rgba(0,0,0,0.04); }
 .tab-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--success); }
-.editor-body { flex: 1; display: flex; flex-direction: column; min-height: 0; }
+.editor-body { flex: 1; display: flex; flex-direction: column; min-height: 0; max-height: calc(100vh - 280px); overflow: hidden; }
 
 /* CodeMirror 编辑器适配 */
 .editor-body .CodeMirror {
   flex: 1; font-size: 13px; line-height: 1.7; height: auto;
   font-family: var(--mono);
+  max-height: calc(100vh - 280px);
+  overflow: auto;
 }
-.editor-body .cm-editor-wrap { display: flex; flex-direction: column; flex: 1; min-height: 0; }
+.editor-body .cm-editor-wrap { display: flex; flex-direction: column; flex: 1; min-height: 0; overflow: hidden; }
 .editor-status {
   display: flex; align-items: center; justify-content: space-between; padding: 6px 16px;
   background: var(--primary-bg); font-size: 11px; color: var(--primary); font-family: var(--mono);

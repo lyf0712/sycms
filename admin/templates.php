@@ -103,25 +103,37 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'delet
     }
 }
 
-// ---- 上传文件 ----
+// ---- 上传文件(支持多文件) ----
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'upload_file') {
     csrf_verify($_POST['_csrf'] ?? null);
-    if (!empty($_FILES['upload']['name'])) {
-        $name = basename($_FILES['upload']['name']);
-        // 只允许常见前端文件类型
-        $ext = strtolower(pathinfo($name, PATHINFO_EXTENSION));
-        $allowed = ['html', 'htm', 'css', 'js', 'png', 'jpg', 'jpeg', 'gif', 'webp', 'svg', 'ico', 'txt', 'json', 'woff', 'woff2'];
-        if (!in_array($ext, $allowed, true)) {
-            $msg = ['type' => 'error', 'text' => '不允许的文件类型:' . $ext];
-        } elseif ($_FILES['upload']['error'] !== UPLOAD_ERR_OK) {
-            $msg = ['type' => 'error', 'text' => '文件上传失败'];
-        } elseif (@move_uploaded_file($_FILES['upload']['tmp_name'], TEMPLATE_DIR . '/' . $name)) {
-            $msg = ['type' => 'success', 'text' => '文件已上传:' . $name];
-        } else {
-            $msg = ['type' => 'error', 'text' => '上传失败,请检查 templates/ 目录写入权限'];
-        }
-    } else {
+    $files = $_FILES['upload'] ?? null;
+    if (!$files || empty($files['name'][0])) {
         $msg = ['type' => 'error', 'text' => '请选择要上传的文件'];
+    } else {
+        $allowed = ['html', 'htm', 'css', 'js', 'mjs', 'png', 'jpg', 'jpeg', 'gif', 'webp', 'svg', 'ico', 'txt', 'json', 'woff', 'woff2'];
+        $ok = 0; $fail = [];
+        $count = is_array($files['name']) ? count($files['name']) : 1;
+        for ($i = 0; $i < $count; $i++) {
+            $name = basename((string)$files['name'][$i]);
+            $ext = strtolower(pathinfo($name, PATHINFO_EXTENSION));
+            $err = (int)$files['error'][$i];
+            if (!in_array($ext, $allowed, true)) {
+                $fail[] = $name . ' (类型不允许)';
+            } elseif ($err !== UPLOAD_ERR_OK) {
+                $fail[] = $name . ' (上传失败)';
+            } elseif (@move_uploaded_file($files['tmp_name'][$i], TEMPLATE_DIR . '/' . $name)) {
+                $ok++;
+            } else {
+                $fail[] = $name . ' (写入失败)';
+            }
+        }
+        if ($ok && !$fail) {
+            $msg = ['type' => 'success', 'text' => "已上传 {$ok} 个文件"];
+        } elseif ($ok) {
+            $msg = ['type' => 'success', 'text' => "已上传 {$ok} 个,失败 " . count($fail) . ' 个:' . implode(', ', $fail)];
+        } else {
+            $msg = ['type' => 'error', 'text' => '全部上传失败:' . implode(', ', $fail)];
+        }
     }
 }
 
@@ -164,21 +176,30 @@ require __DIR__ . '/partials/header.php';
     </div>
     <div class="tree-list">
       <?php foreach ($files as $f): ?>
-      <a href="templates.php?file=<?= urlencode($f) ?>" class="tree-item <?= $f === $currentFile ? 'active' : '' ?>">
-        <span class="tree-icon"><?= strpos($f, '.css') !== false ? 'C' : (strpos($f, '.js') !== false ? 'J' : 'H') ?></span>
-        <span class="tree-name"><?= e($f) ?></span>
-        <em><?= count($allScans[$f] ?? []) ?></em>
-      </a>
+      <div class="tree-item-wrap <?= $f === $currentFile ? 'active' : '' ?>">
+        <a href="templates.php?file=<?= urlencode($f) ?>" class="tree-item">
+          <span class="tree-icon"><?= strpos($f, '.css') !== false ? 'C' : (strpos($f, '.js') !== false ? 'J' : 'H') ?></span>
+          <span class="tree-name"><?= e($f) ?></span>
+          <em><?= count($allScans[$f] ?? []) ?></em>
+        </a>
+        <form method="post" class="tree-del-form" onsubmit="return confirm('确定删除文件 <?= e(addslashes($f)) ?> 吗？此操作不可撤销')">
+          <input type="hidden" name="_csrf" value="<?= csrf_token() ?>">
+          <input type="hidden" name="action" value="delete_file">
+          <input type="hidden" name="file" value="<?= e($f) ?>">
+          <button type="submit" class="tree-del" title="删除文件">×</button>
+        </form>
+      </div>
       <?php endforeach; ?>
     </div>
     <div class="tree-tip">
       将前端文件放入此目录即可挂载,文件代码中的 {{ key }} 会被自动替换为后台变量值。
     </div>
     <button class="btn ghost block" onclick="document.getElementById('uploadForm').click()">上传文件</button>
-    <form method="post" enctype="multipart/form-data" style="display:none" id="uploadFormWrap">
+    <form method="post" enctype="multipart/form-data" id="uploadFormWrap">
       <input type="hidden" name="_csrf" value="<?= csrf_token() ?>">
       <input type="hidden" name="action" value="upload_file">
-      <input type="file" name="upload" id="uploadForm" onchange="this.form.submit()">
+      <input type="file" name="upload[]" id="uploadForm" multiple onchange="this.form.submit()">
+      <small class="upload-hint">支持一次选择多个文件</small>
     </form>
   </aside>
 
