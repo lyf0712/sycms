@@ -280,7 +280,7 @@ $allPass = EnvCheck::allPass($checks);
           <input type="password" name="confirm" placeholder="再次输入密码" required>
         </div>
         <div class="form-field">
-          <label>管理员邮箱 <em>用于找回密码</em></label>
+          <label>管理员邮箱 <em>选填,便于记录</em></label>
           <input type="email" name="email" value="<?= e($_POST['email'] ?? '') ?>" placeholder="admin@example.com">
         </div>
         <div class="form-actions">

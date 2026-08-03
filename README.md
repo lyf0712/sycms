@@ -88,9 +88,46 @@ php -S localhost:8080
 # 访问 http://localhost:8080/
 ```
 
+## 忘记/重置管理员密码
+
+本系统不提供邮件找回密码功能（避免依赖外部 SMTP 服务）。如忘记密码，请 **在服务器上重置**，三种方式任选：
+
+### 方式一：PHP CLI 重置（推荐）
+
+```bash
+# 进入项目根目录,执行:
+php -r "
+require 'lib/bootstrap.php';
+Database::exec('UPDATE ' . DB_PREFIX . 'users SET password = ? WHERE username = ?',
+    [password_hash('你的新密码', PASSWORD_DEFAULT), 'admin']);
+echo '密码已重置' . PHP_EOL;
+"
+```
+新密码立即生效,可重新登录。
+
+### 方式二：后台"系统设置"页改密码
+
+用 admin 账号登录 → 后台 → **系统设置** → 改密码（旧密码验证后设置新密码）。
+
+### 方式三：直接改数据库（应急）
+
+用任意 MySQL 客户端连上库,执行:
+
+```sql
+-- 生成新密码 hash(PHP 端)
+-- password_hash('新密码', PASSWORD_DEFAULT) 的结果粘到下方:
+UPDATE lp_users SET password = '这里填 hash 结果' WHERE username = 'admin';
+```
+
+密码 hash 可用 PHP 一行生成:
+```bash
+php -r "echo password_hash('你的新密码', PASSWORD_DEFAULT);"
+```
+
 ## 安全提示
 
 1. 安装完成后请删除 `install.php`、`install-cli.php`
 2. 在"系统设置"中生成随机的后台入口(如 `/manage-x7k9.php`),不要使用默认 `/admin`
 3. 定期更换管理员密码
 4. 生产环境建议配置 HTTPS 与服务器防火墙
+5. 忘记密码时优先用方式一(CLI 重置),无需数据库工具
