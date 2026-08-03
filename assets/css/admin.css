@@ -635,8 +635,8 @@ td { padding: 0 20px; height: 60px; border-top: 1px solid var(--border); font-si
 }
 
 /* ===== 模板文件布局 ===== */
-.tpl-layout { display: grid; grid-template-columns: 260px 1fr 340px; grid-template-rows: minmax(0, 1fr); margin: -24px; min-height: calc(100vh - 64px); }
-.tpl-tree { border-right: 1px solid var(--border); padding: 16px 0; background: var(--bg); }
+.tpl-layout { display: grid; grid-template-columns: 260px 1fr 340px; grid-template-rows: minmax(0, 1fr); margin: -24px; height: calc(100vh - 64px); overflow: hidden; }
+.tpl-tree { border-right: 1px solid var(--border); padding: 16px 0; background: var(--bg); display: flex; flex-direction: column; min-height: 0; overflow: hidden; }
 .tpl-tree-head { display: flex; align-items: center; justify-content: space-between; padding: 0 16px 12px; }
 .tpl-tree-head strong { font-size: 13px; font-weight: 600; font-family: var(--mono); }
 .tree-list { padding: 0 12px; }
@@ -667,30 +667,67 @@ td { padding: 0 20px; height: 60px; border-top: 1px solid var(--border); font-si
 .tree-item-wrap.active .tree-del:hover { background: rgba(255,255,255,0.6); color: #DC2626; }
 
 .upload-hint { display: block; font-size: 11px; color: var(--text-3); margin-top: 6px; }
+
+/* 上传按钮带图标 */
+.upload-trigger { display: flex; align-items: center; justify-content: center; gap: 6px; cursor: pointer; }
+
+/* 把原生 input[type=file] 完全隐藏 —— 通过 label for 触发 */
+.upload-input-hidden {
+  position: absolute; width: 1px; height: 1px;
+  opacity: 0; pointer-events: none;
+  left: -9999px; top: -9999px;
+}
+.upload-form { display: none; }
+
+/* 上传状态:显示已选文件列表 */
+.upload-status { padding: 0 16px; min-height: 0; }
+.upload-pending {
+  background: var(--primary-bg); border-radius: 8px; padding: 10px 12px;
+  border: 1px solid var(--primary-bg-2); margin-top: 8px;
+}
+.upload-pending-head { font-size: 12px; color: var(--primary-dark); margin-bottom: 8px; }
+.upload-pending-head strong { color: var(--primary); font-weight: 600; font-size: 14px; margin: 0 2px; }
+.upload-pending-files { display: flex; flex-wrap: wrap; gap: 4px; }
+.file-pill {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: #fff; border: 1px solid var(--primary-bg-2); color: var(--text);
+  padding: 2px 8px; border-radius: 4px; font-size: 11px;
+  font-family: var(--mono); max-width: 100%;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.file-pill em { color: var(--text-3); font-style: normal; font-size: 10px; }
+.upload-hint-inline { font-size: 10px; color: var(--text-3); margin-top: 6px; opacity: .7; }
 .tree-tip { padding: 12px 16px; font-size: 11px; color: var(--text-3); line-height: 1.6; margin-bottom: 8px; }
 .new-file-box { padding: 0 16px 12px; }
 .new-file-form { display: flex; gap: 6px; }
 .new-file-form input { flex: 1; height: 32px; border: 1px solid var(--border-2); border-radius: 6px; padding: 0 10px; font-size: 12px; font-family: var(--mono); }
 .new-file-form button { height: 32px; padding: 0 12px; border-radius: 6px; border: none; background: var(--primary); color: #fff; cursor: pointer; font-size: 12px; }
 
-.tpl-editor { display: flex; flex-direction: column; background: #fff; min-height: 0; }
-.editor-tabs { display: flex; gap: 2px; padding: 8px; border-bottom: 1px solid var(--border); background: var(--bg); }
+.tpl-editor { display: flex; flex-direction: column; background: #fff; min-height: 0; overflow: hidden; }
+.editor-tabs { display: flex; gap: 2px; padding: 8px; border-bottom: 1px solid var(--border); background: var(--bg); flex-shrink: 0; }
 .editor-tabs .tab {
   display: flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 6px;
   font-size: 12px; color: var(--text-2); font-family: var(--mono); background: transparent;
 }
 .editor-tabs .tab.active { background: #fff; color: var(--text); box-shadow: 0 1px 2px rgba(0,0,0,0.04); }
 .tab-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--success); }
-.editor-body { flex: 1; display: flex; flex-direction: column; min-height: 0; max-height: calc(100vh - 280px); overflow: hidden; }
+.editor-body { flex: 1; min-height: 0; display: flex; flex-direction: column; overflow: hidden; }
 
-/* CodeMirror 编辑器适配 */
+/* CodeMirror 编辑器适配 —— 滚动条只在内容超出时显示 */
 .editor-body .CodeMirror {
-  flex: 1; font-size: 13px; line-height: 1.7; height: auto;
+  flex: 1; min-height: 0; height: 100%;
+  font-size: 13px; line-height: 1.7;
   font-family: var(--mono);
-  max-height: calc(100vh - 280px);
   overflow: auto;
 }
+.editor-body .CodeMirror-scroll { overflow: auto; min-height: 0; }
 .editor-body .cm-editor-wrap { display: flex; flex-direction: column; flex: 1; min-height: 0; overflow: hidden; }
+
+/* 滚动条:默认 thin + 浅色,只在实际内容超出时显示 */
+.editor-body .CodeMirror::-webkit-scrollbar { width: 10px; height: 10px; }
+.editor-body .CodeMirror::-webkit-scrollbar-thumb { background: rgba(15,23,42,0.18); border-radius: 5px; }
+.editor-body .CodeMirror::-webkit-scrollbar-thumb:hover { background: rgba(15,23,42,0.32); }
+.editor-body .CodeMirror::-webkit-scrollbar-track { background: transparent; }
 .editor-status {
   display: flex; align-items: center; justify-content: space-between; padding: 6px 16px;
   background: var(--primary-bg); font-size: 11px; color: var(--primary); font-family: var(--mono);

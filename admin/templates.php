@@ -194,13 +194,17 @@ require __DIR__ . '/partials/header.php';
     <div class="tree-tip">
       将前端文件放入此目录即可挂载,文件代码中的 {{ key }} 会被自动替换为后台变量值。
     </div>
-    <button class="btn ghost block" onclick="document.getElementById('uploadForm').click()">上传文件</button>
-    <form method="post" enctype="multipart/form-data" id="uploadFormWrap">
+    <label class="btn ghost block upload-trigger" for="uploadInput">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+      上传文件
+    </label>
+    <form method="post" enctype="multipart/form-data" id="uploadFormWrap" class="upload-form">
       <input type="hidden" name="_csrf" value="<?= csrf_token() ?>">
       <input type="hidden" name="action" value="upload_file">
-      <input type="file" name="upload[]" id="uploadForm" multiple onchange="this.form.submit()">
-      <small class="upload-hint">支持一次选择多个文件</small>
+      <input type="file" id="uploadInput" name="upload[]" multiple class="upload-input-hidden">
     </form>
+    <div id="uploadStatus" class="upload-status"></div>
+    <small class="upload-hint">支持一次选择多个文件</small>
   </aside>
 
   <!-- 中央代码编辑器 -->
@@ -257,6 +261,44 @@ require __DIR__ . '/partials/header.php';
 
 <!-- CodeMirror 编辑器初始化 -->
 <script src="../assets/codemirror/lib/codemirror.js"></script>
+<script>
+/**
+ * 上传文件状态:选完后显示已选文件列表 + 大小,然后自动提交
+ */
+(function () {
+  function fmtSize(b) {
+    if (b < 1024) return b + ' B';
+    if (b < 1048576) return (b / 1024).toFixed(1) + ' KB';
+    return (b / 1048576).toFixed(2) + ' MB';
+  }
+  var input = document.getElementById('uploadInput');
+  var status = document.getElementById('uploadStatus');
+  var form = document.getElementById('uploadFormWrap');
+  if (!input || !status || !form) return;
+
+  input.addEventListener('change', function () {
+    var files = Array.prototype.slice.call(this.files);
+    if (!files.length) { status.innerHTML = ''; return; }
+    var total = files.reduce(function (a, f) { return a + f.size; }, 0);
+    var html = '<div class="upload-pending">';
+    html += '<div class="upload-pending-head">📦 已选 <strong>' + files.length + '</strong> 个文件,共 ' + fmtSize(total) + '</div>';
+    html += '<div class="upload-pending-files">';
+    files.forEach(function (f) {
+      html += '<span class="file-pill">' + escHtml(f.name) + '<em>' + fmtSize(f.size) + '</em></span>';
+    });
+    html += '</div><div class="upload-hint-inline">提交后将自动上传 ↑</div>';
+    html += '</div>';
+    status.innerHTML = html;
+    // 自动提交
+    form.submit();
+  });
+  function escHtml(s) {
+    return String(s).replace(/[&<>"']/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+    });
+  }
+})();
+</script>
 <script>
 /**
  * 简易 AMD shim:CodeMirror 5 的 mode 文件采用 UMD 模式,
