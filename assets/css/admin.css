@@ -717,7 +717,7 @@ td { padding: 0 20px; height: 60px; border-top: 1px solid var(--border); font-si
 .tree-item-wrap.active .tree-del { color: var(--primary); }
 .tree-item-wrap.active .tree-del:hover { background: rgba(255,255,255,0.6); color: #DC2626; }
 
-.upload-hint { display: block; font-size: 11px; color: var(--text-3); margin-top: 6px; }
+.upload-hint { display: block; font-size: 11px; color: var(--text-3); margin: 6px 0 0; text-align: center; }
 
 /* 上传按钮带图标 */
 .upload-trigger { display: flex; align-items: center; justify-content: center; gap: 6px; cursor: pointer; }
