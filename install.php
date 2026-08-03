@@ -75,7 +75,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'insta
     $username = trim((string)($_POST['username'] ?? ''));
     $password = (string)($_POST['password'] ?? '');
     $confirm = (string)($_POST['confirm'] ?? '');
-    $email = trim((string)($_POST['email'] ?? ''));
 
     if ($username === '' || strlen($username) < 3) {
         $error = '管理员账号至少 3 个字符';
@@ -99,9 +98,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'insta
 
             // 2. 创建管理员(已存在则更新为本次设置的账号密码,保证重复安装不报错)
             $hash = password_hash($password, PASSWORD_DEFAULT);
-            $pdo->prepare("INSERT INTO `{$prefix}users` (`username`,`password`,`email`) VALUES (?,?,?)
-                ON DUPLICATE KEY UPDATE `password` = VALUES(`password`), `email` = VALUES(`email`)")
-                ->execute([$username, $hash, $email]);
+            $pdo->prepare("INSERT INTO `{$prefix}users` (`username`,`password`) VALUES (?,?)
+                ON DUPLICATE KEY UPDATE `password` = VALUES(`password`)")
+                ->execute([$username, $hash]);
 
             // 3. 写入 config.php
             $key = bin2hex(random_bytes(24));
@@ -278,10 +277,6 @@ $allPass = EnvCheck::allPass($checks);
         <div class="form-field">
           <label>确认密码</label>
           <input type="password" name="confirm" placeholder="再次输入密码" required>
-        </div>
-        <div class="form-field">
-          <label>管理员邮箱 <em>选填,便于记录</em></label>
-          <input type="email" name="email" value="<?= e($_POST['email'] ?? '') ?>" placeholder="admin@example.com">
         </div>
         <div class="form-actions">
           <div class="btns">
