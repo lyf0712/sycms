@@ -679,7 +679,7 @@ td { padding: 0 20px; height: 60px; border-top: 1px solid var(--border); font-si
 .tpl-tree { border-right: 1px solid var(--border); padding: 16px 0; background: var(--bg); display: flex; flex-direction: column; min-height: 0; overflow: hidden; }
 .tpl-tree-head { display: flex; align-items: center; justify-content: space-between; padding: 0 16px 12px; }
 .tpl-tree-head strong { font-size: 13px; font-weight: 600; font-family: var(--mono); }
-.tree-list { padding: 0 12px; overflow-y: auto; flex: 1 1 auto; min-height: 120px; max-height: 60vh; }
+.tree-list { padding: 0 12px; overflow-y: auto; flex: 0 1 auto; min-height: 120px; max-height: 60vh; }
 .tree-item-wrap {
   display: flex; align-items: center; gap: 4px;
   padding: 0 4px; border-radius: 8px;
