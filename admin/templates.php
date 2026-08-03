@@ -164,14 +164,15 @@ require __DIR__ . '/partials/header.php';
   <aside class="tpl-tree">
     <div class="tpl-tree-head">
       <strong>templates/</strong>
-      <button class="mini-add" onclick="document.getElementById('newFileBox').style.display='block'">+</button>
+      <button type="button" class="mini-add" id="newFileBtn" aria-label="新建文件">+</button>
     </div>
     <div id="newFileBox" style="display:none" class="new-file-box">
-      <form method="post" class="new-file-form">
+      <form method="post" class="new-file-form" id="newFileForm">
         <input type="hidden" name="_csrf" value="<?= csrf_token() ?>">
         <input type="hidden" name="action" value="create_file">
-        <input type="text" name="new_file" placeholder="new-page.html" required>
+        <input type="text" name="new_file" placeholder="new-page.html" autocomplete="off" required>
         <button type="submit" class="btn sm primary">创建</button>
+        <button type="button" class="btn sm btn-cancel" id="newFileCancel">取消</button>
       </form>
     </div>
     <div class="tree-list">
@@ -299,6 +300,37 @@ require __DIR__ . '/partials/header.php';
   }
 })();
 </script>
+<script>
+/**
+ * 新建文件框:点 + 弹出 + 取消按钮 + 失焦自动取消
+ */
+(function () {
+  var btn = document.getElementById('newFileBtn');
+  var box = document.getElementById('newFileBox');
+  var form = document.getElementById('newFileForm');
+  var cancel = document.getElementById('newFileCancel');
+  var input = form ? form.querySelector('input[name="new_file"]') : null;
+  if (!btn || !box || !form) return;
+
+  function show() {
+    box.style.display = 'block';
+    if (input) { input.value = ''; setTimeout(function () { input.focus(); }, 50); }
+  }
+  function hide() { box.style.display = 'none'; }
+
+  btn.addEventListener('click', show);
+  cancel.addEventListener('click', hide);
+
+  // 失焦自动关闭:200ms 后检查 activeElement 是否在 box 内
+  form.addEventListener('focusout', function () {
+    setTimeout(function () {
+      var active = document.activeElement;
+      if (box.style.display !== 'none' && !box.contains(active)) hide();
+    }, 200);
+  });
+})();
+</script>
+
 <script>
 /**
  * 简易 AMD shim:CodeMirror 5 的 mode 文件采用 UMD 模式,
