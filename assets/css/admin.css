@@ -735,19 +735,25 @@ td { padding: 0 20px; height: 60px; border-top: 1px solid var(--border); font-si
   font-family: var(--mono);
   overflow: auto;
 }
-.editor-body .CodeMirror-scroll { overflow-y: auto; overflow-x: hidden; min-height: 0; scrollbar-gutter: stable; }
-.editor-body .cm-editor-wrap { display: flex; flex-direction: column; flex: 1; min-height: 0; overflow: hidden; }
+/* 编辑器容器:外层 overflow 接管滚动 */
+.editor-body { flex: 1; min-height: 0; display: flex; flex-direction: column; overflow: auto; }
+.editor-body .CodeMirror { display: block; flex: 0 0 auto; min-height: 100%; height: auto; }
+.editor-body .CodeMirror-scroll { overflow: visible !important; min-height: 0; }
+.editor-body .cm-editor-wrap { display: flex; flex-direction: column; flex: 0 0 auto; min-height: 0; overflow: visible; }
 
-/* 编辑器滚动条:贴近 dracula 主题,默认透明,hover 才显示,贴合编辑区 */
-.editor-body .CodeMirror-scroll::-webkit-scrollbar { width: 10px; height: 10px; }
-.editor-body .CodeMirror-scroll::-webkit-scrollbar-track { background: transparent; }
-.editor-body .CodeMirror-scroll::-webkit-scrollbar-thumb { background: transparent; border-radius: 5px; transition: background .2s; }
-.editor-body .CodeMirror-scroll:hover::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); }
-.editor-body .CodeMirror-scroll::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.32); }
-.editor-body .CodeMirror-scroll::-webkit-scrollbar-corner { background: transparent; }
+/* 完全隐藏 CodeMirror 自带的内嵌滚动条(由外层 .editor-body 接管) */
+.editor-body .CodeMirror-vscrollbar,
+.editor-body .CodeMirror-hscrollbar { display: none !important; }
 
-/* Firefox 等浏览器:scrollbar-color 自定义(hover 时不能用纯 CSS,fallback) */
-.editor-body .CodeMirror-scroll { scrollbar-width: thin; scrollbar-color: rgba(255,255,255,0.15) transparent; }
+/* 滚动条:贴近 dracula 主题,默认透明,hover 才显示 */
+.editor-body::-webkit-scrollbar { width: 10px; height: 10px; }
+.editor-body::-webkit-scrollbar-track { background: transparent; }
+.editor-body::-webkit-scrollbar-thumb { background: transparent; border-radius: 5px; transition: background .2s; }
+.editor-body:hover::-webkit-scrollbar-thumb { background: rgba(15,23,42,0.18); }
+.editor-body::-webkit-scrollbar-thumb:hover { background: rgba(15,23,42,0.32); }
+.editor-body::-webkit-scrollbar-corner { background: transparent; }
+/* Firefox 兼容 */
+.editor-body { scrollbar-width: thin; scrollbar-color: rgba(15,23,42,0.18) transparent; }
 .editor-status {
   display: flex; align-items: center; justify-content: space-between; padding: 6px 16px;
   background: var(--primary-bg); font-size: 11px; color: var(--primary); font-family: var(--mono);
